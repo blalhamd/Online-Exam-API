@@ -1,8 +1,12 @@
-﻿namespace OnlineExam.API.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineExam.Core.Dtos.Auth.Requests;
+using OnlineExam.Core.Dtos.Auth.Responses;
+using OnlineExam.Core.IServices;
+
+namespace OnlineExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableRateLimiting(RateLimiterType.Concurrency)]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
@@ -13,11 +17,9 @@
         }
 
         [HttpPost]
-        public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest request)
+        public async Task<LoginViewModel> LoginAsync(LoginRequest request)
         {
-            var query = await _authenticationService.LoginAsync(request);
-           
-            return Ok(query);
+            return await _authenticationService.LoginAsync(request);           
         }
 
     }

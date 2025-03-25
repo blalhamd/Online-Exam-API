@@ -1,7 +1,10 @@
-﻿namespace OnlineExam.Core.IServices
+﻿using OnlineExam.Core.Dtos.Auth.Requests;
+using OnlineExam.Core.Dtos.Auth.Responses;
+
+namespace OnlineExam.Core.IServices
 {
     public interface IAuthenticationService
     {
-        Task<LoginResponse> LoginAsync(LoginRequest request);
+        Task<LoginViewModel> LoginAsync(LoginRequest request);
     }
 }

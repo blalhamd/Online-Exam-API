@@ -1,4 +1,13 @@
-﻿namespace OnlineExam.Infrastructure.Data.context
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using OnlineExam.Domain.Entities;
+using OnlineExam.Domain.Entities.Identity;
+using OnlineExam.Shared.Interfaces;
+using System.Security.Claims;
+
+namespace OnlineExam.Infrastructure.Data.context
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {
@@ -6,9 +15,9 @@
         public DbSet<Exam> Exams { get; set; }
         public DbSet<StudentExam> StudentExams { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-        public DbSet<Question> Questions { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<TeacherSubject> TeacherSubjects { get; set; }
         public DbSet<ChooseQuestion> ChooseQuestions { get; set; }
-        public DbSet<TrueOrFalseQuestion> TrueOrFalseQuestions { get; set; }
         public DbSet<Choice> Choices { get; set; }
 
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -23,7 +32,6 @@
 
             builder.Ignore<BaseEntity>();
 
-            builder.Entity<AppUser>().ToTable("Users", schema: "Security");
             builder.Entity<IdentityRole>().ToTable("Roles", schema: "Security");
             builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles", schema: "Security");
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims", schema: "Security");

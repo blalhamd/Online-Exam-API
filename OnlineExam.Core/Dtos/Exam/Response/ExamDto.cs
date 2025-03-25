@@ -1,4 +1,7 @@
-﻿namespace OnlineExam.Core.Dtos.Exam.Response
+﻿using OnlineExam.Core.Dtos.Choose.Responses;
+using OnlineExam.Domain.Enums;
+
+namespace OnlineExam.Core.Dtos.Exam.Response
 {
     public class ExamDto // will inclue Subject and select Name it..
     {
@@ -12,7 +15,6 @@
         public string Description { get; set; } = null!;
         public bool Status { get; set; } // (Active) Or (Not Active)
         public ICollection<ChooseQuestionDto>? ChooseQuestions { get; set; } = new List<ChooseQuestionDto>();
-        public ICollection<TrueOrFalseQuestionDto>? TrueOrFalseQuestions { get; set; } = new List<TrueOrFalseQuestionDto>();
         public int? NumberOfQuestions { get; set; }
     }
 }

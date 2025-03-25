@@ -1,4 +1,12 @@
-﻿namespace OnlineExam.Core.IServices.Provider
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using OnlineExam.Core.Constants;
+using OnlineExam.Domain.Entities.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace OnlineExam.Core.IServices.Provider
 {
     public class JwtProvider : IJwtProvider
     {
@@ -9,7 +17,7 @@
             _jwtSetting = jwtSetting.Value;
         }
 
-        public (string token, DateTime? expireAt) GenerateToken(AppUser applicationUser, IEnumerable<string> roles)
+        public (string token, DateTime? expireAt) GenerateToken(AppUser applicationUser, IEnumerable<string> roles, IEnumerable<string> permissions)
         {
             var descriptor = new SecurityTokenDescriptor()
             {
@@ -24,6 +32,7 @@
                     new Claim(ClaimTypes.Name, applicationUser.UserName!),
                     new Claim(ClaimTypes.Email, applicationUser.Email!),
                     new Claim(nameof(roles), System.Text.Json.JsonSerializer.Serialize(roles),JsonClaimValueTypes.JsonArray),
+                    new Claim(nameof(permissions), System.Text.Json.JsonSerializer.Serialize(permissions),JsonClaimValueTypes.JsonArray),
                 })
             };
 

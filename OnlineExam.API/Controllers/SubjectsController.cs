@@ -1,8 +1,14 @@
-﻿namespace OnlineExam.API.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineExam.API.Filters.Authentication;
+using OnlineExam.Core.Constants;
+using OnlineExam.Core.Dtos.Pagination;
+using OnlineExam.Core.Dtos.Subject;
+using OnlineExam.Core.IServices;
+
+namespace OnlineExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableRateLimiting(RateLimiterType.Concurrency)]
     public class SubjectsController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
@@ -12,14 +18,11 @@
             _subjectService = subjectService;
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet]
-        //[Authorize(Roles = $"{Role.Admin},{Role.User}")]
-        public async Task<ActionResult<PaginatedResponse<Subject>>> GetSubjectsAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HasPermission(Permissions.Subjects.View)]
+        public async Task<PaginatedResponse<SubjectViewModel>> GetSubjectsAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var subjects = await _subjectService.GetSubjectsAsync(pageNumber, pageSize);
-
-            return Ok(subjects);
+            return await _subjectService.GetSubjectsAsync(pageNumber, pageSize);
         }
     }
 }

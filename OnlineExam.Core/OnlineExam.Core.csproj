@@ -16,8 +16,4 @@
     <ProjectReference Include="..\OnlineExam.Domain\OnlineExam.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="IRepositories\Non-Generic\" />
-  </ItemGroup>
-
 </Project>

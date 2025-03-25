@@ -1,8 +1,16 @@
-﻿namespace OnlineExam.API.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineExam.API.Filters.Authentication;
+using OnlineExam.Core.Constants;
+using OnlineExam.Core.Dtos.Choose.Requests;
+using OnlineExam.Core.Dtos.Exam.Request;
+using OnlineExam.Core.Dtos.Exam.Response;
+using OnlineExam.Core.Dtos.Pagination;
+using OnlineExam.Core.IServices;
+
+namespace OnlineExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableRateLimiting(RateLimiterType.Concurrency)]
     public class ExamsController : ControllerBase
     {
         private readonly IExamService _examService;
@@ -13,113 +21,68 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{Role.Admin},{Role.User}")]
-        public async Task<ActionResult<PaginatedResponse<ExamDto>>> GetExams([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1)
+        [HasPermission(Permissions.Exams.View)]
+        public async Task<PaginatedResponse<ExamViewModel>> GetExams([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1)
         {
-            var exams = await _examService.GetExams(pageNumber, pageSize);
-
-            return Ok(exams);
+            return await _examService.GetExams(pageNumber, pageSize);
         }
 
         [HttpGet("{examId}")]
-        [Authorize(Roles = $"{Role.Admin},{Role.User}")]
-        public async Task<ActionResult<ExamDto>> GetExamByIdAsync(int examId)
+        [HasPermission(Permissions.Exams.ViewById)]
+        public async Task<ExamViewModel> GetExamByIdAsync(int examId)
         {
-            var exam = await _examService.GetExamByIdAsync(examId);
-
-            return Ok(exam);
+            return await _examService.GetExamByIdAsync(examId);
         }
 
         [HttpPost("{examId}/assign-students")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> AssignStudentsToExam(int examId,[FromBody] List<int> studentIds, CancellationToken cancellation = default)
+        [HasPermission(Permissions.Exams.AssignStudents)]
+        public async Task AssignStudentsToExam(int examId,[FromBody] List<int> studentIds, CancellationToken cancellation = default)
         {
             await _examService.AssignStudentsToExam(examId, studentIds, cancellation);
-
-            return NoContent();
         }
 
         [HttpPost]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> CreateExam(CreateExamDto model, CancellationToken cancellationToken = default)
+        [HasPermission(Permissions.Exams.Create)]
+        public async Task CreateExam(CreateExamDto model, CancellationToken cancellationToken = default)
         {
             await _examService.CreateExam(model, cancellationToken);
-
-            return NoContent();
         }
 
         [HttpPut("{examId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> EditExam(int examId, CreateExamDto model, CancellationToken cancellationToken = default)
+        [HasPermission(Permissions.Exams.Edit)]
+        public async Task EditExam(int examId, CreateExamDto model, CancellationToken cancellationToken = default)
         {
             await _examService.EditExam(examId, model, cancellationToken);
-
-            return NoContent();
         }
 
         [HttpDelete("{examId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> DeleteExam(int examId, CancellationToken cancellationToken = default)
+        [HasPermission(Permissions.Exams.Delete)]
+        public async Task DeleteExam(int examId, CancellationToken cancellationToken = default)
         {
             await _examService.DeleteExam(examId, cancellationToken);
-
-            return NoContent();
         }
 
         [HttpPost("{examId}/questions/mcq")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> AddChooseQuestionToExam(int examId, CreateChooseQuestionDto model, CancellationToken cancellation = default)
+        [HasPermission(Permissions.Exams.CreateChooseQuestion)]
+        public async Task AddChooseQuestionToExam(int examId, CreateChooseQuestionDto model, CancellationToken cancellation = default)
         {
             await _examService.AddChooseQuestionToExam(examId,model,cancellation);
-
-            return NoContent();
         }
 
-        [HttpPost("{examId}/questions/true-false")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> AddTrueOrFalseQuestionToExam(int examId, CreateTrueOrFalseQuestion model, CancellationToken cancellation = default)
-        {
-            await _examService.AddTrueOrFalseQuestionToExam(examId,model, cancellation);
-            
-            return NoContent();
-        }
 
         [HttpPut("{examId}/questions/mcq/{questionId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> UpdateChooseQuestionToExam(int examId, int questionId, CreateChooseQuestionDto model, CancellationToken cancellation = default)
+        [HasPermission(Permissions.Exams.EditChooseQuestion)]
+        public async Task UpdateChooseQuestionToExam(int examId, int questionId, CreateChooseQuestionDto model, CancellationToken cancellation = default)
         {
             await _examService.UpdateChooseQuestionToExam(examId, questionId, model, cancellation);
-
-            return NoContent();
-        }
-
-        [HttpPut("{examId}/questions/true-false/{questionId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> UpdateTrueOrFalseQuestionToExam(int examId, int questionId, CreateTrueOrFalseQuestion model, CancellationToken cancellation = default)
-        {
-            await _examService.UpdateTrueOrFalseQuestionToExam(examId, questionId, model, cancellation);
-
-            return NoContent();
         }
 
         [HttpDelete("{examId}/questions/mcq/{questionId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> DeleteChooseQuestionToExam(int examId, int questionId, CancellationToken cancellation = default)
+        [HasPermission(Permissions.Exams.DeleteChooseQuestion)]
+        public async Task DeleteChooseQuestionToExam(int examId, int questionId, CancellationToken cancellation = default)
         {
             await _examService.DeleteChooseQuestionToExam(examId, questionId, cancellation);
-
-            return NoContent();
         }
-
-        [HttpDelete("{examId}/questions/true-false/{questionId}")]
-        [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> DeleteTrueOrFalseQuestionToExam(int examId, int questionId, CancellationToken cancellation = default)
-        {
-            await _examService.DeleteTrueOrFalseQuestionToExam(examId, questionId, cancellation);
-
-            return NoContent();
-        }
-
 
     }
 }

@@ -1,4 +1,9 @@
-﻿namespace OnlineExam.API.Extensions
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using OnlineExam.Core.Constants;
+using System.Text;
+
+namespace OnlineExam.API.Extensions
 {
     public static class AuthExtension
     {

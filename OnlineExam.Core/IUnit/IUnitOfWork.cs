@@ -1,4 +1,6 @@
-﻿namespace OnlineExam.Core.IUnit
+﻿using OnlineExam.Core.IRepositories.Generic;
+
+namespace OnlineExam.Core.IUnit
 {
     public interface IUnitOfWork<T> : IAsyncDisposable where T : class
     {

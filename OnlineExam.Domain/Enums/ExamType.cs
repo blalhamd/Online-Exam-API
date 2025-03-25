@@ -1,4 +1,6 @@
-﻿namespace OnlineExam.Domain.Enums
+﻿using System.Runtime.Serialization;
+
+namespace OnlineExam.Domain.Enums
 {
     public enum ExamType
     {

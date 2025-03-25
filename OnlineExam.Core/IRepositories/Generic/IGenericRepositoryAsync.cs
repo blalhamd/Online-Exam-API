@@ -1,12 +1,15 @@
-﻿namespace OnlineExam.Core.IRepositories.Generic
+﻿using OnlineExam.Core.Dtos.Pagination;
+using System.Linq.Expressions;
+
+namespace OnlineExam.Core.IRepositories.Generic
 {
     public interface IGenericRepositoryAsync<T> where T : class
     {
         Task<IList<T>> GetAllAsync(Expression<Func<T, bool>> expression);
-        Task<(IList<T> items, int totalCount)> GetAllAsync(int pageNumber = 1, int pageSize = 10);
-        Task<(IList<T> items, int totalCount)> GetAllAsync(Func<IQueryable<T>, IQueryable<T>> include = null, int pageNumber = 1, int pageSize = 10);
-        Task<(IList<T> items, int totalCount)> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> include = null, int pageNumber = 1, int pageSize = 10);
-        Task<(IList<T> items, int totalCount)> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> include = null, Expression<Func<T, object>> sortBy = null, bool isDes = false, int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedResult<T>> GetAllAsync(int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedResult<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>> include = null, int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedResult<T>> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> include = null, int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedResult<T>> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> include = null, Expression<Func<T, object>> sortBy = null, bool isDes = false, int pageNumber = 1, int pageSize = 10);
         Task<T> GetByIdAsync(object id);
         Task<double> GetAverageAsync(Expression<Func<T, double>> expression, Expression<Func<T, bool>> criteria);
         Task<double> GetAverageAsync(Expression<Func<T, double>> expression);

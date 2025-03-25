@@ -1,4 +1,11 @@
-﻿namespace OnlineExam.Infrastructure.Unit
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using OnlineExam.Core.IRepositories.Generic;
+using OnlineExam.Core.IUnit;
+using OnlineExam.Infrastructure.Data.context;
+using OnlineExam.Infrastructure.Repositories.Generic;
+
+namespace OnlineExam.Infrastructure.Unit
 {
     public class UnitOfWork<T> : IUnitOfWork<T> where T : class
     {

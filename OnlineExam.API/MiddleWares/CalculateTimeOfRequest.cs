@@ -1,4 +1,6 @@
-﻿namespace MosefakApp.API.MiddleWares
+﻿using System.Diagnostics;
+
+namespace MosefakApp.API.MiddleWares
 {
     public class CalculateTimeOfRequest
     {

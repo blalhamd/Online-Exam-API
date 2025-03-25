@@ -1,4 +1,6 @@
-﻿namespace OnlineExam.Domain.Entities
+﻿using OnlineExam.Domain.Entities.Identity;
+
+namespace OnlineExam.Domain.Entities
 {
     public class Student : BaseEntity
     {

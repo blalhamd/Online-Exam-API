@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Email and Password</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f2f4f7;
+            font-family: 'Roboto', sans-serif;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #28a745;
+            padding: 20px;
+            text-align: center;
+        }
+
+            .header img {
+                width: 120px;
+            }
+
+        .content {
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+            .content h2 {
+                margin-bottom: 10px;
+                color: #333333;
+                font-size: 24px;
+            }
+
+            .content p {
+                font-size: 16px;
+                color: #666666;
+                line-height: 1.6;
+                margin-bottom: 25px;
+            }
+
+            .content a.btn {
+                background-color: #007bff;
+                color: white;
+                padding: 12px 25px;
+                font-weight: bold;
+                text-decoration: none;
+                border-radius: 6px;
+                transition: background-color 0.3s ease;
+            }
+
+                .content a.btn:hover {
+                    background-color: #0056b3;
+                }
+
+        .footer {
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="[imageUrl]" alt="Online Exam Logo">
+        </div>
+        <div class="content">
+            <h2>[header]</h2>
+            <p>[TextBody]</p>  <!-- This will now correctly show Email and Password -->
+            <a href="[link]" class="btn btn-success">[linkTitle]</a>
+        </div>
+        <div class="footer">
+            <p>Thank you for using Online Exam ❤️</p>
+        </div>
+    </div>
+</body>
+</html>

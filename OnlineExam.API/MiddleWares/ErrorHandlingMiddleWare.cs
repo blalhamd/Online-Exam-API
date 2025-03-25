@@ -1,4 +1,9 @@
-﻿namespace MosefakApp.API.MiddleWares
+﻿using MosefakApp.API.MiddleWares.Models;
+using OnlineExam.Shared.Exceptions.Base;
+using System.Net;
+using System.Text.Json;
+
+namespace MosefakApp.API.MiddleWares
 {
     public class ErrorHandlingMiddleWare
     {

@@ -1,4 +1,10 @@
-﻿namespace OnlineExam.Infrastructure.Repositories.Generic
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineExam.Core.Dtos.Pagination;
+using OnlineExam.Core.IRepositories.Generic;
+using OnlineExam.Infrastructure.Data.context;
+using System.Linq.Expressions;
+
+namespace OnlineExam.Infrastructure.Repositories.Generic
 {
     public class GenericRepositoryAsync<T> : IGenericRepositoryAsync<T> where T : class
     {
@@ -17,16 +23,16 @@
         public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>> expression)
             => await _entity.Where(expression).AsNoTracking().ToListAsync();
 
-        public async Task<(IList<T> items, int totalCount)> GetAllAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedResult<T>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
             => await GetPagedDataAsync(_entity, pageNumber, pageSize);
 
-        public async Task<(IList<T> items, int totalCount)> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedResult<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null, int pageNumber = 1, int pageSize = 10)
             => await GetPagedDataAsync(include?.Invoke(_entity) ?? _entity, pageNumber, pageSize);
 
-        public async Task<(IList<T> items, int totalCount)> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedResult<T>> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null, int pageNumber = 1, int pageSize = 10)
             => await GetPagedDataAsync((include?.Invoke(_entity) ?? _entity).Where(expression), pageNumber, pageSize);
 
-        public async Task<(IList<T> items, int totalCount)> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null, Expression<Func<T, object>>? sortBy = null, bool isDescending = false, int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedResult<T>> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null, Expression<Func<T, object>>? sortBy = null, bool isDescending = false, int pageNumber = 1, int pageSize = 10)
         {
             var query = (include?.Invoke(_entity) ?? _entity).Where(expression);
             if (sortBy is not null)
@@ -113,12 +119,16 @@
             return Task.CompletedTask;
         }
 
-        private async Task<(IList<T> items, int totalCount)> GetPagedDataAsync(IQueryable<T> query, int pageNumber, int pageSize)
+        private async Task<PaginatedResult<T>> GetPagedDataAsync(IQueryable<T> query, int pageNumber, int pageSize)
         {
             pageNumber = Math.Max(1, pageNumber); // Ensure positive page number
             var totalCount = await query.CountAsync();
             var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-            return (items, totalCount);
+            return new PaginatedResult<T>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
     }
 }

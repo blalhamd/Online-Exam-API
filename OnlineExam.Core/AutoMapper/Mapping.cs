@@ -1,4 +1,12 @@
-﻿namespace OnlineExam.Core.AutoMapper
+﻿using AutoMapper;
+using OnlineExam.Core.Dtos.Choose.Requests;
+using OnlineExam.Core.Dtos.Choose.Responses;
+using OnlineExam.Core.Dtos.Exam.Request;
+using OnlineExam.Core.Dtos.Exam.Response;
+using OnlineExam.Core.Dtos.Subject;
+using OnlineExam.Domain.Entities;
+
+namespace OnlineExam.Core.AutoMapper
 {
     public class Mapping : Profile
     {
@@ -15,8 +23,9 @@
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(x => x.Subject.Name))
                 .ForMember(dest => dest.ChooseQuestions, opt => opt.MapFrom(x => x.ChooseQuestions));
 
+            CreateMap<ExamDto,ExamViewModel>().ReverseMap();
+
             CreateMap<ChooseQuestion, ChooseQuestionDto>().ReverseMap();
-            CreateMap<TrueOrFalseQuestion, CreateTrueOrFalseQuestion>().ReverseMap();
 
             CreateMap<ExamDto, CreateExamDto>().ReverseMap();
 
@@ -26,7 +35,8 @@
             CreateMap<ChooseQuestionDto, CreateChooseQuestionDto>().ReverseMap();
             CreateMap<ChoiceDto, CreateChoiceDto>().ReverseMap();
 
-            CreateMap<TrueOrFalseQuestionDto, TrueOrFalseQuestion>().ReverseMap();
+            CreateMap<Subject, SubjectViewModel>().ReverseMap();
+
         }
     }
 }

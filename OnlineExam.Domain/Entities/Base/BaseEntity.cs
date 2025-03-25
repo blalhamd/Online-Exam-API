@@ -1,4 +1,6 @@
-﻿namespace OnlineExam.Domain.Entities
+﻿using OnlineExam.Shared.Interfaces;
+
+namespace OnlineExam.Domain.Entities
 {
     public class BaseEntity : IAuditableEntity, ISoftDeletable
     {

@@ -1,3 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using MosefakApp.API.MiddleWares;
+using OnlineExam.API.Extensions;
+using OnlineExam.API.Filters.Authentication;
+using OnlineExam.DependencyInjection;
+using OnlineExam.Domain.Entities.Identity;
+using OnlineExam.Infrastructure.Data.context;
+using OnlineExam.Infrastructure.SeedData;
+
 namespace OnlineExam.API
 {
     public class Program
@@ -16,6 +26,10 @@ namespace OnlineExam.API
             builder.Services.RegisterUserManager();
             builder.Services.OptionsPatternConfig(builder.Configuration);
 
+            // for permission based authorization
+
+            builder.Services.AddTransient(typeof(IAuthorizationHandler), typeof(PermissionAuthorizationHandler));
+            builder.Services.AddTransient(typeof(IAuthorizationPolicyProvider), typeof(PermissionAuthorizationPolicyProvider));
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -39,19 +53,17 @@ namespace OnlineExam.API
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-            app.UseCors(x => x.AllowAnyHeader().AllowCredentials().AllowAnyMethod());
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+
+            app.UseMiddleware<ErrorHandlingMiddleWare>(); // Early error handling for all subsequent middleware
+            app.UseMiddleware<CalculateTimeOfRequest>(); // If it captures request timing, it can go here
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseRateLimiter();
-
             app.MapControllers();
-
-            app.UseMiddleware<ErrorHandlingMiddleWare>();
-            app.UseMiddleware<CalculateTimeOfRequest>();
-
 
             app.Run();
         }

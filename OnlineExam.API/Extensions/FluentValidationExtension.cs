@@ -1,4 +1,8 @@
-﻿namespace OnlineExam.API.Extensions
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using OnlineExam.Core.Dtos.Exam.Request;
+
+namespace OnlineExam.API.Extensions
 {
     public static class FluentValidationExtension
     {

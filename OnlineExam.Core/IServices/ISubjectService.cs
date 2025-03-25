@@ -1,7 +1,10 @@
-﻿namespace OnlineExam.Core.IServices
+﻿using OnlineExam.Core.Dtos.Pagination;
+using OnlineExam.Core.Dtos.Subject;
+
+namespace OnlineExam.Core.IServices
 {
     public interface ISubjectService
     {
-        Task<PaginatedResponse<Subject>> GetSubjectsAsync(int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedResponse<SubjectViewModel>> GetSubjectsAsync(int pageNumber = 1, int pageSize = 10);
     }  
 }

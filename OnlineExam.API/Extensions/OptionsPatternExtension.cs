@@ -1,4 +1,7 @@
-﻿namespace OnlineExam.API.Extensions
+﻿using OnlineExam.Business.Services.Email;
+using OnlineExam.Core.Constants;
+
+namespace OnlineExam.API.Extensions
 {
     public static class OptionsPatternExtension
     {
@@ -12,6 +15,16 @@
             // Validate the configuration settings on start
 
             services.AddOptions<JwtSetting>(configuration["Jwt"])
+                            .ValidateDataAnnotations()
+                            .ValidateOnStart();
+
+            // Configure the MailSetting options from the configuration
+
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+
+            // Validate the configuration settings on start
+
+            services.AddOptions<MailSettings>(configuration["MailSettings"])
                             .ValidateDataAnnotations()
                             .ValidateOnStart();
 
