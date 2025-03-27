@@ -3,7 +3,9 @@ using OnlineExam.Core.Dtos.Choose.Requests;
 using OnlineExam.Core.Dtos.Choose.Responses;
 using OnlineExam.Core.Dtos.Exam.Request;
 using OnlineExam.Core.Dtos.Exam.Response;
+using OnlineExam.Core.Dtos.Student;
 using OnlineExam.Core.Dtos.Subject;
+using OnlineExam.Core.Dtos.Teacher;
 using OnlineExam.Domain.Entities;
 
 namespace OnlineExam.Core.AutoMapper
@@ -36,6 +38,8 @@ namespace OnlineExam.Core.AutoMapper
             CreateMap<ChoiceDto, CreateChoiceDto>().ReverseMap();
 
             CreateMap<Subject, SubjectViewModel>().ReverseMap();
+            CreateMap<Teacher, TeacherViewModel>().ReverseMap();
+            CreateMap<Student, StudentViewModel>().ReverseMap();
 
         }
     }

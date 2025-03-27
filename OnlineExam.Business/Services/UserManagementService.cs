@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OnlineExam.Core.Constants;
+using OnlineExam.Core.Dtos.Pagination;
 using OnlineExam.Core.Dtos.Student;
 using OnlineExam.Core.Dtos.Teacher;
 using OnlineExam.Core.IRepositories.Generic;
+using OnlineExam.Core.IRepositories.Non_Generic;
 using OnlineExam.Core.IServices;
 using OnlineExam.Core.IServices.Email;
 using OnlineExam.Core.IUnit;
@@ -22,20 +24,21 @@ namespace OnlineExam.Business.Services
     {
         private readonly IUnitOfWork<Student> _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IGenericRepositoryAsync<Student> _studentRepository;
-        private readonly IGenericRepositoryAsync<Teacher> _teacherRepository;
+        private readonly IStudentRepositoryAsync _studentRepository;
+        private readonly ITeacherRepositoryAsync _teacherRepository;
         private readonly IValidator<CreateStudentDto> _validator;
         private readonly IValidator<CreateTeacherDto> _teacherValidator;
         private readonly ILogger<UserManagementService> _logger;
         private readonly IEmailBodyBuilder _emailBodyBuilder;
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IMapper _mapper;
 
         public UserManagementService(
             IUnitOfWork<Student> unitOfWork,
             UserManager<AppUser> userManager,
-            IGenericRepositoryAsync<Teacher> teacherRepository,
-            IGenericRepositoryAsync<Student> studentRepository,
+            ITeacherRepositoryAsync teacherRepository,
+            IStudentRepositoryAsync studentRepository,
             IValidator<CreateStudentDto> validator,
             IValidator<CreateTeacherDto> teacherValidator,
             IEmailBodyBuilder emailBodyBuilder,
@@ -53,6 +56,7 @@ namespace OnlineExam.Business.Services
             _emailBodyBuilder = emailBodyBuilder;
             _emailSender = emailSender;
             _logger = logger;
+            _mapper = mapper;
             _contextAccessor = contextAccessor;
         }
 
@@ -170,6 +174,58 @@ namespace OnlineExam.Business.Services
             await SendEmail(user,teacherDto.Password);
 
             _logger.LogInformation("Teacher created successfully: {UserId} ({Email})", user.Id, user.Email);
+        }
+
+        public async Task<PaginatedResponse<StudentViewModel>> GetStudents(int pageNumber = 1, int pageSize = 10)
+        {
+            var pagienedResult = await _studentRepository.GetStudents(pageNumber, pageSize);
+
+            var totalPages = (int)Math.Ceiling((double)pagienedResult.TotalCount / pageSize);
+
+            var response = new PaginatedResponse<StudentViewModel>
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+            };
+
+            if (pagienedResult is null)
+            {
+                response.Data = new List<StudentViewModel>();
+                return response;
+            }
+
+            var studentsViewModel = _mapper.Map<List<StudentViewModel>>(pagienedResult.Items);
+
+            response.Data = studentsViewModel;
+
+            return response;
+        }
+
+        public async Task<PaginatedResponse<TeacherViewModel>> GetTeachers(int pageNumber = 1, int pageSize = 10)
+        {
+            var pagienedResult = await _teacherRepository.GetTeachers(pageNumber, pageSize);
+
+            var totalPages = (int)Math.Ceiling((double)pagienedResult.TotalCount / pageSize);
+
+            var response = new PaginatedResponse<TeacherViewModel>
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+            };
+
+            if (pagienedResult is null)
+            {
+                response.Data = new List<TeacherViewModel>();
+                return response;
+            }
+
+            var teachersViewModel = _mapper.Map<List<TeacherViewModel>>(pagienedResult.Items);
+
+            response.Data = teachersViewModel;
+
+            return response;
         }
 
         private async Task SendEmail(AppUser user,string password)

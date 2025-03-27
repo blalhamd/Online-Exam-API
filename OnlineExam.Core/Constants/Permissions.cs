@@ -26,6 +26,8 @@
         {
             public const string AddStudent = "Permissions.Users.AddStudent";
             public const string AddTeacher = "Permissions.Users.AddTeacher";
+            public const string ViewTeachers = "Permissions.Users.ViewTeachers";
+            public const string ViewStudents = "Permissions.Users.ViewStudents";
         }
 
         public static IList<string> GetPermissions()

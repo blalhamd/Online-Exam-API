@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using OnlineExam.Business.Services.Email;
 using OnlineExam.Core.IRepositories.Non_Generic;
 using OnlineExam.Core.IServices.Email;
-using OnlineExam.Domain.Entities.Identity;
 using OnlineExam.Infrastructure.Repositories.Non_Generic;
 
 namespace OnlineExam.DependencyInjection
@@ -22,6 +20,8 @@ namespace OnlineExam.DependencyInjection
             services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
             services.AddScoped(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
             services.AddScoped(typeof(IExamRepositoryAsync), typeof(ExamRepositoryAsync));
+            services.AddScoped(typeof(IStudentRepositoryAsync), typeof(StudentRepositoryAsync));
+            services.AddScoped(typeof(ITeacherRepositoryAsync), typeof(TeacherRepositoryAsync));
 
             //Register Services
 
