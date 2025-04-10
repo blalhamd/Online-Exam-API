@@ -13,6 +13,8 @@ namespace OnlineExam.Infrastructure.Data.context
     {
         public DbSet<Student> Students { get; set; }
         public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamAttempt> ExamAttempts { get; set; }
+        public DbSet<UserAnswer> UserAnswers { get; set; }
         public DbSet<StudentExam> StudentExams { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }

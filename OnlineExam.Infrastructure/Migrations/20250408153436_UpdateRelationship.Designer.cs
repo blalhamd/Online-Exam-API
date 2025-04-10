@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineExam.Infrastructure.Data.context;
 
@@ -11,9 +12,11 @@ using OnlineExam.Infrastructure.Data.context;
 namespace OnlineExam.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408153436_UpdateRelationship")]
+    partial class UpdateRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -786,7 +789,7 @@ namespace OnlineExam.Infrastructure.Migrations
 
                     b.HasIndex("SelectedChoiceId");
 
-                    b.ToTable("UserAnswers", (string)null);
+                    b.ToTable("UserAnswers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -845,7 +848,7 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.HasOne("OnlineExam.Domain.Entities.ChooseQuestion", "ChooseQuestion")
                         .WithMany("Choices")
                         .HasForeignKey("ChooseQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ChooseQuestion");
@@ -955,9 +958,9 @@ namespace OnlineExam.Infrastructure.Migrations
             modelBuilder.Entity("OnlineExam.Domain.Entities.UserAnswer", b =>
                 {
                     b.HasOne("OnlineExam.Domain.Entities.ChooseQuestion", "ChooseQuestion")
-                        .WithMany("UserAnswers")
+                        .WithMany()
                         .HasForeignKey("ChooseQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineExam.Domain.Entities.ExamAttempt", "ExamAttempt")
@@ -967,9 +970,8 @@ namespace OnlineExam.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("OnlineExam.Domain.Entities.Choice", "SelectedChoice")
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("SelectedChoiceId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("SelectedChoiceId");
 
                     b.Navigation("ChooseQuestion");
 
@@ -978,16 +980,9 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.Navigation("SelectedChoice");
                 });
 
-            modelBuilder.Entity("OnlineExam.Domain.Entities.Choice", b =>
-                {
-                    b.Navigation("UserAnswers");
-                });
-
             modelBuilder.Entity("OnlineExam.Domain.Entities.ChooseQuestion", b =>
                 {
                     b.Navigation("Choices");
-
-                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("OnlineExam.Domain.Entities.Exam", b =>

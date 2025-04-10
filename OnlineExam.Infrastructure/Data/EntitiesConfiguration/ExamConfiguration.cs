@@ -18,6 +18,11 @@ namespace OnlineExam.Infrastructure.Data.EntitiesConfiguration
                        .IsRequired();
 
                 builder.Property(x => x.Duration).HasColumnType("time").IsRequired();
+
+                builder.HasMany(x => x.ChooseQuestions)
+                       .WithOne(x => x.Exam)
+                       .HasForeignKey(x => x.ExamId)
+                       .OnDelete(DeleteBehavior.Cascade);
             }
         }
     }

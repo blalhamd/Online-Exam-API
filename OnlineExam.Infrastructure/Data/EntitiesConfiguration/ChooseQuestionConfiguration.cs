@@ -18,6 +18,11 @@ namespace OnlineExam.Infrastructure.Data.EntitiesConfiguration
             builder.Property(x => x.GradeOfQuestion)
                    .HasColumnType("float")
                    .IsRequired();
+
+            builder.HasMany(x => x.Choices)
+                   .WithOne(x => x.ChooseQuestion)
+                   .HasForeignKey(x => x.ChooseQuestionId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

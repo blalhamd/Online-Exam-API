@@ -6,5 +6,5 @@
         public Teacher Teacher { get; set; } = null!;
         public int SubjectId { get; set; }
         public Subject Subject { get; set; } = null!;
-    } 
+    }
 }

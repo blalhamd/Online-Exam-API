@@ -56,9 +56,11 @@ namespace OnlineExam.DependencyInjection
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<ISubjectService, SubjectService>();
-            services.AddScoped<IUserManagementService, UserManagementService>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IEmailBodyBuilder, EmailBodyBuilder>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IExamAttemptService, ExamAttemptService>();
 
             return services;
         }

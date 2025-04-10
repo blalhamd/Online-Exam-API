@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OnlineExam.API.Filters.Authentication;
 using OnlineExam.Core.Constants;
 using OnlineExam.Core.Dtos.Choose.Requests;
@@ -11,6 +13,7 @@ namespace OnlineExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ExamsController : ControllerBase
     {
         private readonly IExamService _examService;
@@ -22,7 +25,7 @@ namespace OnlineExam.API.Controllers
 
         [HttpGet]
         [HasPermission(Permissions.Exams.View)]
-        public async Task<PaginatedResponse<ExamViewModel>> GetExams([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1)
+        public async Task<PaginatedResponse<ExamViewModel>> GetExams([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             return await _examService.GetExams(pageNumber, pageSize);
         }

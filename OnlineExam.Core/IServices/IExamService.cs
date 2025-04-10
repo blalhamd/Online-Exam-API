@@ -11,7 +11,7 @@ namespace OnlineExam.Core.IServices
         Task CreateExam(CreateExamDto model, CancellationToken cancellationToken = default);
         Task EditExam(int examId, CreateExamDto model, CancellationToken cancellationToken = default);
         Task DeleteExam(int examId, CancellationToken cancellationToken = default);
-        Task<PaginatedResponse<ExamViewModel>> GetExams(int pageNumber = 1, int pageSize = 1);
+        Task<PaginatedResponse<ExamViewModel>> GetExams(int pageNumber = 1, int pageSize = 10);
         Task<ExamViewModel> GetExamByIdAsync(int examId);
         Task AddChooseQuestionToExam(int examId, CreateChooseQuestionDto model, CancellationToken cancellation = default);
         Task UpdateChooseQuestionToExam(int examId, int questionId, CreateChooseQuestionDto model, CancellationToken cancellation = default);

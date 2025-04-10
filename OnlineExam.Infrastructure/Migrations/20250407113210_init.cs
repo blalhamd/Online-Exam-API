@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OnlineExam.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    // <inheritdoc />
     public partial class init : Migration
     {
-        /// <inheritdoc />
+        // <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -22,7 +22,7 @@ namespace OnlineExam.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(256)", nullable: true)
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,8 +89,8 @@ namespace OnlineExam.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(256)", nullable: true)
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -145,8 +145,8 @@ namespace OnlineExam.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(256)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(256)", nullable: true)
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,7 +166,7 @@ namespace OnlineExam.Infrastructure.Migrations
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(256)", nullable: true),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -188,7 +188,7 @@ namespace OnlineExam.Infrastructure.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(256)", nullable: true)
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -320,6 +320,46 @@ namespace OnlineExam.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExamAttempts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ExamId = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    EndTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Score = table.Column<double>(type: "float", nullable: false),
+                    IsSubmitted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    FirstUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    FirstUpdatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    LastUpdatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttempts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_Exams_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "Exams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExamAttempts_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Security",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StudentExams",
                 columns: table => new
                 {
@@ -421,6 +461,48 @@ namespace OnlineExam.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExamAttemptId = table.Column<int>(type: "int", nullable: false),
+                    ChooseQuestionId = table.Column<int>(type: "int", nullable: false),
+                    SelectedChoiceId = table.Column<int>(type: "int", nullable: true),
+                    Score = table.Column<double>(type: "float", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    FirstUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    FirstUpdatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    LastUpdatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Choices_SelectedChoiceId",
+                        column: x => x.SelectedChoiceId,
+                        principalTable: "Choices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_ChooseQuestions_ChooseQuestionId",
+                        column: x => x.ChooseQuestionId,
+                        principalTable: "ChooseQuestions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_ExamAttempts_ExamAttemptId",
+                        column: x => x.ExamAttemptId,
+                        principalTable: "ExamAttempts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
@@ -440,6 +522,16 @@ namespace OnlineExam.Infrastructure.Migrations
                 name: "IX_ChooseQuestions_ExamId",
                 table: "ChooseQuestions",
                 column: "ExamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamAttempts_ExamId",
+                table: "ExamAttempts",
+                column: "ExamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamAttempts_UserId",
+                table: "ExamAttempts",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Exams_SubjectId",
@@ -491,6 +583,21 @@ namespace OnlineExam.Infrastructure.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_ChooseQuestionId",
+                table: "UserAnswers",
+                column: "ChooseQuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_ExamAttemptId",
+                table: "UserAnswers",
+                column: "ExamAttemptId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_SelectedChoiceId",
+                table: "UserAnswers",
+                column: "SelectedChoiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
                 schema: "Security",
                 table: "UserRoles",
@@ -511,7 +618,7 @@ namespace OnlineExam.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
         }
 
-        /// <inheritdoc />
+        // <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -524,9 +631,6 @@ namespace OnlineExam.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Choices");
-
-            migrationBuilder.DropTable(
                 name: "RoleClaims",
                 schema: "Security");
 
@@ -537,11 +641,11 @@ namespace OnlineExam.Infrastructure.Migrations
                 name: "TeacherSubjects");
 
             migrationBuilder.DropTable(
-                name: "UserRoles",
-                schema: "Security");
+                name: "UserAnswers");
 
             migrationBuilder.DropTable(
-                name: "ChooseQuestions");
+                name: "UserRoles",
+                schema: "Security");
 
             migrationBuilder.DropTable(
                 name: "Students");
@@ -550,15 +654,24 @@ namespace OnlineExam.Infrastructure.Migrations
                 name: "Teachers");
 
             migrationBuilder.DropTable(
+                name: "Choices");
+
+            migrationBuilder.DropTable(
+                name: "ExamAttempts");
+
+            migrationBuilder.DropTable(
                 name: "Roles",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "Exams");
+                name: "ChooseQuestions");
 
             migrationBuilder.DropTable(
                 name: "Users",
                 schema: "Security");
+
+            migrationBuilder.DropTable(
+                name: "Exams");
 
             migrationBuilder.DropTable(
                 name: "Subjects");

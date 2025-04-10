@@ -22,6 +22,12 @@
             public const string DeleteChooseQuestion = "Permissions.Exams.DeleteChooseQuestion";
         }
 
+        public static class ExamAttempt
+        {
+            public const string StartExam = "Permissions.ExamAttempts.StartExam";
+            public const string SubmitExam = "Permissions.ExamAttempts.SubmitExam";
+        }
+
         public static class Users
         {
             public const string AddStudent = "Permissions.Users.AddStudent";

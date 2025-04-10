@@ -27,6 +27,7 @@ namespace OnlineExam.Business.Services
         private readonly IGenericRepositoryAsync<ChooseQuestion> _chooseQuestionRepositoryAsync;
         private readonly IGenericRepositoryAsync<Choice> _choiceRepositoryAsync;
         private readonly IGenericRepositoryAsync<StudentExam> _studentExamGepositoryAsync;
+        private readonly IGenericRepositoryAsync<UserAnswer> _userAnswerExamGepositoryAsync;
         public ExamService(
             IMapper mapper,
             ILogger<ExamService> logger,
@@ -35,7 +36,8 @@ namespace OnlineExam.Business.Services
             IExamRepositoryAsync examRepositoryAsync,
             IGenericRepositoryAsync<ChooseQuestion> chooseQuestionRepositoryAsync,
             IGenericRepositoryAsync<Choice> choiceRepositoryAsync,
-            IGenericRepositoryAsync<StudentExam> studentExamGepositoryAsync)
+            IGenericRepositoryAsync<StudentExam> studentExamGepositoryAsync,
+            IGenericRepositoryAsync<UserAnswer> userAnswerExamGepositoryAsync)
         {
             _mapper = mapper;
             _logger = logger;
@@ -45,6 +47,7 @@ namespace OnlineExam.Business.Services
             _chooseQuestionRepositoryAsync = chooseQuestionRepositoryAsync;
             _choiceRepositoryAsync = choiceRepositoryAsync;
             _studentExamGepositoryAsync = studentExamGepositoryAsync;
+            _userAnswerExamGepositoryAsync = userAnswerExamGepositoryAsync;
         }
 
         public async Task AssignStudentsToExam(int examId, List<int> studentIds, CancellationToken cancellation = default)
@@ -139,20 +142,21 @@ namespace OnlineExam.Business.Services
             _logger.LogInformation("Exam created successfully");
         }
 
+        
+
         public async Task EditExam(int examId, CreateExamDto model, CancellationToken cancellationToken = default)
         {
             var validationResult = await _validator.ValidateAsync(model, cancellationToken);
-
             if (!validationResult.IsValid)
             {
-                _logger.LogWarning("Validation failed for CreateExamViewModel: {Errors}", validationResult.Errors);
+                _logger.LogWarning("Validation failed for CreateExamDto: {Errors}", validationResult.Errors);
                 throw new BadRequest(string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
             }
 
-            // Fetch the exam including related entities
             var exam = await _examRepositoryAsync.FirstOrDefaultAsync(
                 e => e.Id == examId,
-                query => query.Include(x => x.Subject).Include(x => x.ChooseQuestions)
+                query => query.Include(x => x.ChooseQuestions)
+                              .ThenInclude(q => q.Choices)
             );
 
             if (exam is null)
@@ -161,22 +165,53 @@ namespace OnlineExam.Business.Services
                 throw new ItemNotFound($"Exam with ID {examId} does not exist.");
             }
 
-            _mapper.Map(model, exam);
+            // ⚠️ Remove related UserAnswers manually before modifying choices
+            var relatedQuestionIds = exam.ChooseQuestions.Select(q => q.Id).ToList();
 
-            await _examRepositoryAsync.UpdateEntityAsync(exam);
-            
-            var rowsAffected = await _unitOfWork.CommitAsync(cancellationToken);
+            var userAnswers = await _userAnswerExamGepositoryAsync
+                .GetAllAsync(a => relatedQuestionIds.Contains(a.ChooseQuestionId));
 
-            if (rowsAffected <= 0)
+            await _userAnswerExamGepositoryAsync.DeleteRangeAsync(userAnswers);
+
+            // Remove old questions (with their choices via Cascade)
+            await _chooseQuestionRepositoryAsync.DeleteRangeAsync(exam.ChooseQuestions);
+
+            // Update exam basic data
+            exam.SubjectId = model.SubjectId;
+            exam.TotalGrade = model.TotalGrade;
+            exam.Level = model.Level;
+            exam.Description = model.Description;
+            exam.Status = model.Status;
+            exam.Duration = model.Duration;
+            exam.ExamType = model.ExamType;
+
+            // Add new choose questions with choices
+            foreach (var qDto in model.ChooseQuestions)
             {
-                _logger.LogError("Failed to Edit the exam to the database.");
-                throw new BadRequest("Exam couldn't be Updated.");
+                var question = new ChooseQuestion
+                {
+                    Title = qDto.Title,
+                    GradeOfQuestion = qDto.GradeOfQuestion,
+                    CorrectAnswerIndex = qDto.CorrectAnswerIndex,
+                    ExamId = exam.Id,
+                    Choices = qDto.Choices.Select(c => new Choice { Text = c.Text }).ToList()
+                };
+
+                exam.ChooseQuestions.Add(question);
             }
 
-            _logger.LogInformation("Exam Updated successfully");
+            await _examRepositoryAsync.UpdateEntityAsync(exam);
+
+            var rowsAffected = await _unitOfWork.CommitAsync(cancellationToken);
+            if (rowsAffected <= 0)
+            {
+                _logger.LogError("Failed to update the exam.");
+                throw new BadRequest("Exam couldn't be updated.");
+            }
+
+            _logger.LogInformation("Exam ID {ExamId} updated successfully.", examId);
         }
 
-      
 
         public async Task DeleteExam(int examId, CancellationToken cancellationToken = default)
         {
@@ -252,7 +287,8 @@ namespace OnlineExam.Business.Services
                 throw new BadRequest("question is not exist");
         }
 
-       
+        
+
         // Generic method to get exam with included questions
         private async Task<Exam> GetExamWithQuestions<T>(int examId, Expression<Func<Exam, IEnumerable<T>>> include)
             where T : class
@@ -283,5 +319,7 @@ namespace OnlineExam.Business.Services
             if (rowsAffected <= 0)
                 throw new BadRequest($"Question didn't {operation}");
         }
+
+        
     }
 }

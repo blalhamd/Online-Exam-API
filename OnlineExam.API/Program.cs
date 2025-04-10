@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MosefakApp.API.MiddleWares;
@@ -34,6 +35,24 @@ namespace OnlineExam.API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            /*
+             * ? Option 2: Set Global Fallback to JWT (Recommended for APIs)
+               If you want to avoid repeating [Authorize(...)] on every controller,
+               add a global fallback policy in your Program.cs:
+             * 
+             * 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            Now every controller and endpoint is secured by default unless you explicitly decorate with [AllowAnonymous].
+
+            */
+
             var app = builder.Build();
 
             // Seed data after app is built
@@ -50,20 +69,21 @@ namespace OnlineExam.API
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                
             }
 
+            app.UseMiddleware<ErrorHandlingMiddleWare>(); // Early error handling for all subsequent middleware
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
-            app.UseMiddleware<ErrorHandlingMiddleWare>(); // Early error handling for all subsequent middleware
-            app.UseMiddleware<CalculateTimeOfRequest>(); // If it captures request timing, it can go here
-
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseMiddleware<CalculateTimeOfRequest>(); // If it captures request timing, it can go here
 
             app.Run();
         }

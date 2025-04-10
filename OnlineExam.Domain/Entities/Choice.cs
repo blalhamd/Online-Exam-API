@@ -5,5 +5,6 @@
         public string Text { get; set; } = null!;
         public int ChooseQuestionId { get; set; }
         public ChooseQuestion ChooseQuestion { get; set; } = null!;
+        public IList<UserAnswer> UserAnswers { get; set; } = new List<UserAnswer>();
     }
 }

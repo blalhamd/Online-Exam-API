@@ -12,8 +12,8 @@ using OnlineExam.Infrastructure.Data.context;
 namespace OnlineExam.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250325221544_init")]
-    partial class init
+    [Migration("20250408154710_modifyRelationship")]
+    partial class modifyRelationship
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -327,6 +327,69 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.HasIndex("SubjectId");
 
                     b.ToTable("Exams", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineExam.Domain.Entities.ExamAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("EndTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FirstUpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("FirstUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSubmitted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LastUpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<DateTimeOffset>("StartTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExamAttempts");
                 });
 
             modelBuilder.Entity("OnlineExam.Domain.Entities.Identity.AppUser", b =>
@@ -671,6 +734,64 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.ToTable("TeacherSubjects");
                 });
 
+            modelBuilder.Entity("OnlineExam.Domain.Entities.UserAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChooseQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeletedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ExamAttemptId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FirstUpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("FirstUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LastUpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("SelectedChoiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChooseQuestionId");
+
+                    b.HasIndex("ExamAttemptId");
+
+                    b.HasIndex("SelectedChoiceId");
+
+                    b.ToTable("UserAnswers", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -727,7 +848,7 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.HasOne("OnlineExam.Domain.Entities.ChooseQuestion", "ChooseQuestion")
                         .WithMany("Choices")
                         .HasForeignKey("ChooseQuestionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ChooseQuestion");
@@ -738,7 +859,7 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.HasOne("OnlineExam.Domain.Entities.Exam", "Exam")
                         .WithMany("ChooseQuestions")
                         .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Exam");
@@ -753,6 +874,25 @@ namespace OnlineExam.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("OnlineExam.Domain.Entities.ExamAttempt", b =>
+                {
+                    b.HasOne("OnlineExam.Domain.Entities.Exam", "Exam")
+                        .WithMany()
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OnlineExam.Domain.Entities.Identity.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineExam.Domain.Entities.Student", b =>
@@ -815,9 +955,42 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("OnlineExam.Domain.Entities.UserAnswer", b =>
+                {
+                    b.HasOne("OnlineExam.Domain.Entities.ChooseQuestion", "ChooseQuestion")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("ChooseQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OnlineExam.Domain.Entities.ExamAttempt", "ExamAttempt")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("ExamAttemptId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OnlineExam.Domain.Entities.Choice", "SelectedChoice")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("SelectedChoiceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ChooseQuestion");
+
+                    b.Navigation("ExamAttempt");
+
+                    b.Navigation("SelectedChoice");
+                });
+
+            modelBuilder.Entity("OnlineExam.Domain.Entities.Choice", b =>
+                {
+                    b.Navigation("UserAnswers");
+                });
+
             modelBuilder.Entity("OnlineExam.Domain.Entities.ChooseQuestion", b =>
                 {
                     b.Navigation("Choices");
+
+                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("OnlineExam.Domain.Entities.Exam", b =>
@@ -825,6 +998,11 @@ namespace OnlineExam.Infrastructure.Migrations
                     b.Navigation("ChooseQuestions");
 
                     b.Navigation("StudentExams");
+                });
+
+            modelBuilder.Entity("OnlineExam.Domain.Entities.ExamAttempt", b =>
+                {
+                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("OnlineExam.Domain.Entities.Student", b =>

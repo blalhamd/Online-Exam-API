@@ -10,16 +10,15 @@ namespace OnlineExam.API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-
         public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<LoginViewModel> LoginAsync(LoginRequest request)
         {
-            return await _authenticationService.LoginAsync(request);           
+            return await _authenticationService.LoginAsync(request);
         }
 
     }
