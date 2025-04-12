@@ -91,7 +91,7 @@ namespace OnlineExam.Business.Services
                 {
                     ExamAttemptId = examAttemptId,
                     ChooseQuestionId = answer.QuestionId,
-                    SelectedChoiceId = answer.SelectedChoiceId,
+                    SelectedChoiceId = answer.SelectedChoiceId, // the problem here
                     Score = score
                 });
 

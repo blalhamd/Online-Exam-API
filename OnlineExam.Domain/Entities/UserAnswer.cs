@@ -9,7 +9,6 @@
         public ChooseQuestion ChooseQuestion { get; set; } = null!;
 
         public int? SelectedChoiceId { get; set; } // For MCQ questions
-        public Choice? SelectedChoice { get; set; }
 
         public double Score { get; set; } = 0; // Calculated based on correctness
     }

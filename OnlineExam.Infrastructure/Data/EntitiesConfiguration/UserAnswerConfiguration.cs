@@ -14,11 +14,6 @@ namespace OnlineExam.Infrastructure.Data.EntitiesConfiguration
                    .WithMany(x => x.UserAnswers)
                    .HasForeignKey(x => x.ChooseQuestionId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(x => x.SelectedChoice)
-                   .WithMany(x => x.UserAnswers)
-                   .HasForeignKey(x => x.SelectedChoiceId)
-                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
